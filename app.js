@@ -4,12 +4,14 @@ window.addEventListener('load',()=>{
         rows:15,
         column:17,
         SnakeBodyDetails:[],
-        initialSnakeLength:3
+        initialSnakeLength:3,
+        applePos:0,
     };
     
     //View Selection
     const ViewData={
         root:document.getElementById('root'),
+        createDivElement:()=>document.createElement('div'),
         snakesMap:function(rows,columns){
             let box=[];
             for (let i = 0; i < rows*columns; i++) {             
@@ -20,7 +22,6 @@ window.addEventListener('load',()=>{
             return box;
         },
         GameMap:document.createElement('div'),
-        SnakePart:()=>document.createElement('div'),
         getMapStep:(step)=> document.querySelector('.step'+step)
     }
 
@@ -41,13 +42,29 @@ window.addEventListener('load',()=>{
             st.SnakeBodyDetails.push(((Math.round(st.rows/2)-1)*st.column)+i)
         }
         st.SnakeBodyDetails.map((el)=>{
-            let bodyPart=ViewData.SnakePart();
+            let bodyPart=ViewData.createDivElement();
             bodyPart.classList.add('snake');
             ViewData.getMapStep(el).appendChild(bodyPart);
         })
     };
     createSnake();
-    console.log(st.SnakeBodyDetails);    
+    console.log(st.SnakeBodyDetails);
+    
+    //creating apple
+    const createApple=()=>{
+        let apple=ViewData.createDivElement();
+        apple.classList.add('apple');
+        console.log(apple);
+        const pos=Math.round(Math.random()*(st.rows*st.column));
+        if(st.SnakeBodyDetails.includes(pos)){
+            createApple();
+        }else{
+            st.applePos=pos;
+        } 
+        console.log(st.applePos);
+        ViewData.getMapStep(pos).appendChild(apple);
+    }
+    createApple();
 
 
 
