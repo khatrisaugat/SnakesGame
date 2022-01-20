@@ -7,8 +7,9 @@ window.addEventListener('load',()=>{
         initialSnakeLength:3,
         applePos:0,
         direction:'R',
-        speed:180,
-        score:0
+        speed:160,
+        score: localStorage.getItem('score') === null?0:localStorage.getItem('score'),
+        stopGame:true
     };
     
     //View Selection
@@ -33,10 +34,14 @@ window.addEventListener('load',()=>{
     }
 
     //controller
+    ViewData.score.innerHTML=st.score===0?"Score: 0":"Your Previous Score: "+st.score;
     ViewData.playBtn.innerText="Play";
     ViewData.playBtn.classList.add('playBtn');
     ViewData.root.appendChild(ViewData.playBtn);
-    ViewData.playBtn.addEventListener('click',()=>StartGame());
+    ViewData.playBtn.addEventListener('click',()=>{
+        st.stopGame=false;
+        StartGame()
+    });
 
     //creating a map for the game
     const createMap=()=>{
@@ -116,13 +121,17 @@ window.addEventListener('load',()=>{
     const EdgeCheck=()=>{
         // console.log(st.SnakeBodyDetails);
         if(st.SnakeBodyDetails[0]<1){
-            GameOver();
+            if(!st.stopGame)
+                GameOver();
         }else if(st.direction==='R' && (st.SnakeBodyDetails[0])%st.column===0){
-            GameOver();
+            if(!st.stopGame)
+                GameOver();
         }else if(st.direction==='L' && (st.SnakeBodyDetails[0]-1)%st.column===0){
-            GameOver();
+            if(!st.stopGame)
+                GameOver();
         }else if((st.SnakeBodyDetails[0])>st.column*st.rows){
-            GameOver();
+            if(!st.stopGame)
+                GameOver(); 
         }
     }
 
@@ -164,16 +173,21 @@ window.addEventListener('load',()=>{
     }
 
     const GameOver=()=>{
+        localStorage.setItem('score',st.score);
+        st.stopGame=true;
         alert("Game Over!!\nYour score is "+st.score);
         window.location.reload();
 
     }
     const StartGame=()=>{
-        ViewData.playBtn.parentNode.removeChild(ViewData.playBtn);
-        createMap();
-        createSnake();
-        createApple();
-        moveSnake();
+        if(!st.stopGame){
+            ViewData.playBtn.parentNode.removeChild(ViewData.playBtn);
+            st.score=0;
+            createMap();
+            createSnake();
+            createApple();
+            moveSnake();
+        }  
     }
     // StartGame();
 
